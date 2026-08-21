@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Environment / secrets
+.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+
+# Database — reconsider on Day 3: for a small hand-curated dataset it may
+# be worth tracking schema.sql + seed scripts instead of the binary .db file
+*.db
