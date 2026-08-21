@@ -5,7 +5,7 @@ actually done, regardless of how many sittings a step takes.
 
 - [x] **Day 0 — Planning.** Reviewed project brief, resolved open design
       questions, wrote `V1_TECHNICAL_SPEC.md`, set up `docs/`.
-- [ ] **Day 1 — Establish the workshop.** Python, VS Code, Git, GitHub,
+- [x] **Day 1 — Establish the workshop.** Python, VS Code, Git, GitHub,
       venv, SQLite. Repo skeleton. Trivial app that runs and commits.
 - [ ] **Day 2 — Design the historical world.** `WORLD_MODEL.md`: entities,
       properties, relationships, reviewed and critiqued before building.
