@@ -99,8 +99,8 @@ More pairs are added only when real data needs them.
 
 Dates stored as a signed integer **astronomical year** (44 BCE = -43, 1 CE =
 1), avoiding SQLite's native date functions, which don't support BCE. Each
-date field is paired with a `precision` value (`exact`, `circa`, `decade`,
-`century`) so uncertain dates ("mid-4th century BCE") are representable
+date field is paired with a `precision` value (`Exact`, `Circa`, `Decade`,
+`Century`) so uncertain dates ("mid-4th century BCE") are representable
 without false precision.
 
 V1 does not attempt: multiple calendar systems, disputed-date resolution

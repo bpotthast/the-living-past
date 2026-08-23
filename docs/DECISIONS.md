@@ -7,6 +7,56 @@ to the one it replaces.
 Format per entry: what was decided, why, and what the alternatives were.
 
 ---
+## 2026-08-23 — Track schema.sql + seed scripts, not the binary .db file
+
+**Decision:** `data/schema.sql` (and a future seed script) are tracked in
+Git; the generated `living_past.db` file itself stays gitignored, per the
+note already left in `.gitignore`.
+
+**Why:** SQLite `.db` files are binary — Git can't produce a meaningful
+diff when a row or column changes, and merge conflicts on a binary file
+are effectively unresolvable. Treating the `.db` as a build artifact,
+regenerated from `schema.sql` via `sqlite3 living_past.db ".read schema.sql"`,
+keeps the database itself out of version control while keeping every
+structural change fully readable and diffable.
+
+**Alternatives considered:** Tracking the `.db` file directly — simpler on
+day one, but loses diffability and risks unresolvable binary merge
+conflicts as the project continues.
+
+## 2026-08-23 — object.create_date is NOT NULL, matching event.start_date
+
+**Decision:** `object.create_date` is `NOT NULL`, using `create_precision`
+(`exact`/`circa`/`decade`/`century`) to express uncertainty rather than
+allowing the date itself to be absent. This overrides the nullable
+`create_date` originally sketched in `WORLD_MODEL.md`; that doc has been
+updated to match.
+
+**Why:** Same reasoning already applied to `event.start_date` — a loosely
+precise estimate (e.g. `century`) can be given even for genuinely
+uncertain objects, so `NULL` is unnecessary and would introduce an
+inconsistent way of expressing "unknown" across entity tables.
+
+**Alternatives considered:** Nullable `create_date` (the original
+`WORLD_MODEL.md` sketch) — rejected for consistency with the `event` table
+and because a rough estimate is realistically always assignable.
+
+## 2026-08-23 — historical_names stored as comma-delimited TEXT for V1
+
+**Decision:** `place.historical_names` is a single comma-delimited TEXT
+column for V1, not a separate `place_historical_names` table.
+
+**Why:** Simpler for the current small seed dataset and matches V1's
+"start conventional" philosophy. Not easily queryable (can't cleanly
+`WHERE`-match an individual historical name without fragile `LIKE`
+matching), but that limitation isn't hit yet at this scale.
+
+**Alternatives considered:** A dedicated `place_historical_names` table,
+one row per name, joined to `place` — the more correct relational
+approach, but unnecessary complexity before the dataset actually needs
+it. Revisit and migrate to this once historical-name lookups become a
+real use case.
+
 ## 2026-08-23 — Remove event_object_relationships table
 
 **Decision:** Removed "event_object_relationships" table from v1 scope. 
@@ -14,7 +64,7 @@ Format per entry: what was decided, why, and what the alternatives were.
 **Why:** There is no use case for this table with the v1 dataset, removed table to reduce initial complexity. 
 
 
-## 2026-08-23 — Defer soucre_subtype list to v1.x
+## 2026-08-23 — Defer source_subtype list to v1.x
 
 **Decision:** Source_subtype will be freetext for v1. This is also being added to BACKLOG.md for v1.x scope
 
@@ -26,7 +76,7 @@ Format per entry: what was decided, why, and what the alternatives were.
 
 **Decision:** Do not include discovery_precision as part of object table. 
 
-**Why:** Assumed that all discovery dates are well documented. Will add discotery_precision at a later time if needed.
+**Why:** Assumed that all discovery dates are well documented. Will add discovery_precision at a later time if needed.
 
 
 ## 2026-08-19 — Source/provenance granularity: entity-level + per-claim flags

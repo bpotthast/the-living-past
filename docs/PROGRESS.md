@@ -5,6 +5,51 @@ paste this top entry into the chat so Claude has context without you
 re-explaining the project.
 
 ---
+## Session 5 — 2026-08-23
+
+What we did: Set up the SQLite CLI (was previously only using the Python sqlite3
+library implicitly) — downloaded the Windows precompiled binary, added it to PATH,
+verified with sqlite3 --version. Wrote CREATE TABLE statements for all six entity
+tables (source, person, place, event, object, culture_topic) in data/schema.sql,
+translating the WORLD_MODEL.md sketch into real SQLite syntax. Along the way, fixed
+several real dialect mistakes: Postgres/MySQL syntax (SERIAL, VARCHAR(255), ON UPDATE
+CURRENT_TIMESTAMP) that isn't valid SQLite; a stray extra parenthesis and a trailing
+comma; a PowerShell quirk where the `<` input-redirection operator doesn't work
+(resolved via `.read schema.sql`, and switched all six tables to
+`CREATE TABLE IF NOT EXISTS` so the whole file can be safely re-run anytime instead of
+manually commenting tables in/out). Made and logged several real design decisions:
+NULL (not a magic 'Unknown' string) represents unknown birth/death precision;
+historical_names stays a single comma-delimited TEXT column for V1, with a dedicated
+join table deferred until the dataset needs it; latitude/longitude renamed from
+WORLD_MODEL.md's original lat/long; start_date/start_year/create_date are NOT NULL
+across event, culture_topic, and object (loose precision values like 'century' can
+always be assigned, so NULL is reserved for genuinely absent dates), while end_date/
+end_year stay nullable, including recognizing that "open-ended" (US Senate, British
+Parliament) is a distinct concept from "imprecise." Also decided to track schema.sql
+in Git instead of the binary living_past.db file itself, resolving the open question
+left in .gitignore. Ran the finished schema against a real database and verified all
+six tables exist via .tables and .schema.
+
+What I learned: SQLite's type affinity system and why VARCHAR(255) silently becomes
+TEXT. The INTEGER PRIMARY KEY auto-increment idiom, and why SERIAL/AUTOINCREMENT
+keywords from other databases don't apply. CHECK constraints as the mechanism for
+enum-like fields, and that they're case-sensitive — casing has to be picked once and
+used consistently across the whole schema. Why NOT NULL vs nullable is a real modeling
+decision, not just a formality — and specifically why "imprecise" (covered by a
+precision field) and "open-ended" (a null end date) and "unknown" (null, no separate
+flag) are three different concepts that shouldn't be conflated. PowerShell's `<`
+redirection limitation and the Get-Content/.read workarounds. Why CREATE TABLE IF NOT
+EXISTS matters for safely re-running a schema file repeatedly, versus commenting
+sections in and out by hand.
+
+Where we left off: All 6 entity tables exist in living_past.db and schema.sql. Join/
+relationship tables (person_place, person_event, event_event, the *_source_relationships
+tables, etc., per WORLD_MODEL.md) have not been started yet. Seed data has not been
+entered.
+
+Next session should start with: Continuing Day 3 — join/relationship tables (new
+concepts: foreign keys, composite relationships), then seed data entry.
+
 ## Session 4 — 2026-08-23
 
 What we did: Designed WORLD_MODEL.md through four rounds of draft/critique, per the
