@@ -7,6 +7,27 @@ to the one it replaces.
 Format per entry: what was decided, why, and what the alternatives were.
 
 ---
+## 2026-08-23 — Remove event_object_relationships table
+
+**Decision:** Removed "event_object_relationships" table from v1 scope. 
+
+**Why:** There is no use case for this table with the v1 dataset, removed table to reduce initial complexity. 
+
+
+## 2026-08-23 — Defer soucre_subtype list to v1.x
+
+**Decision:** Source_subtype will be freetext for v1. This is also being added to BACKLOG.md for v1.x scope
+
+**Why:** Too many possible subtypes to solidify a subset list. This is unnecessary complexity for the current v1 delivery. 
+
+**Alternatives considered:** (historical item [letter/diary/speech], official records [census data, survey results, lab notes], media [photo, audio recording, poem], book, critique, article, reference material [encyclopedia], guides [textbook, alminac, directory])
+
+## 2026-08-23 — Omit discovery_precision field
+
+**Decision:** Do not include discovery_precision as part of object table. 
+
+**Why:** Assumed that all discovery dates are well documented. Will add discotery_precision at a later time if needed.
+
 
 ## 2026-08-19 — Source/provenance granularity: entity-level + per-claim flags
 

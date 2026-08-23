@@ -5,6 +5,46 @@ paste this top entry into the chat so Claude has context without you
 re-explaining the project.
 
 ---
+## Session 4 — 2026-08-23
+
+What we did: Designed WORLD_MODEL.md through four rounds of draft/critique, per the
+project's stated Day 2 process (user drafts, Claude critiques rather than designs).
+Landed on six entity tables (person, place, event, object, culture_topic, source) and
+join tables for every relationship pair, following the typed-by-pair pattern from
+V1_TECHNICAL_SPEC.md §5. Caught and fixed several real bugs along the way: a
+self-referencing FK naming collision on person_person_relationships, a relation_type
+column that went missing during a rename, a source/sources naming mismatch that took
+three passes to fully stamp out across table name, column names, and FK comments, and
+several invalid-identifier issues (slashes and spaces in culture/topic, lat/long, and
+historical name(s)). Made and documented several real design decisions: sources are
+modeled as their own table plus per-entity-type join tables (not embedded fields);
+object location is expressed via relationship rows, not embedded location fields;
+event_object_relationships is excluded from V1 (no use case in the seed sketch);
+discovery_date has no precision field for now, on the assumption discovery dates are
+well-documented, with a note to revisit if needed; source_subtype is freetext for V1,
+with its detailed taxonomy pushed to backlog rather than built now. Cleaned up the
+relation_type vocabulary, collapsing redundant inverse-verb pairs (precedes/succeeds,
+several parent_of variants, governed_over/ruled_by) into single directional verbs per
+the app-layer-reversal convention already established for event_event_relationships.
+Sketched seed entities: Julius Caesar, Cleopatra, Mark Antony; Rome, Rubicon River,
+Alexandria, Egypt; First Triumvirate formed, Crossing of the Rubicon, Battle of Actium;
+Cleopatra's Needles, Elephant Denarius; Roman Senate, Egyptian Politics, Ancient Rome,
+Ancient Egypt.
+
+What I learned: How naming inconsistencies hide across a growing document even after
+you think you've fixed them — the source/sources bug survived three rounds because
+each fix only caught one of the three places the name appeared. The value of
+cross-checking a schema against actual seed data rather than reviewing it in the
+abstract (several relationship pairs and vocab gaps only became visible once checked
+against the Caesar/Cleopatra/Antony sketch). Why directional relationships should use
+one verb with app-layer reversal instead of separate forward/inverse vocabulary
+entries. Why a single FK column can't reference "whichever table" in SQLite, and why
+that forces a join-table-per-entity-type approach for something like sources.
+
+Where we left off: WORLD_MODEL.md content is finalized and all documents updated to reflect session 4 progress.
+
+Next session should start with: Day 3 activities.
+
 ## Session 3 — 2026-08-20
 
 What we did: Completed Day 1 for real. Built the actual repo skeleton (src/, tests/, data/, docs/), moved the planning docs into place, ran git init. Wrote a first Python script from scratch (src/main.py) — this was the user's first Python code ever, coached through basic syntax (print, functions, indentation vs. Java's braces, the if __name__ == "__main__": idiom). Created the project's real .venv (separate from the earlier throwaway test venv). Staged, committed, and pushed the first commit to a new GitHub repo (github.com/bpotthast/the-living-past). Day 1 milestone achieved: the app runs and changes are committed (and now pushed).
@@ -14,6 +54,7 @@ What I learned: Basic Python syntax coming from a Java background (no semicolons
 Where we left off: Day 1 is fully complete and pushed to GitHub. Day 2 (designing WORLD_MODEL.md) has not started.
 
 Next session should start with: Day 2 — design the entity/relationship world model, to be critiqued before anything gets built from it, per docs/ROADMAP.md.
+
 ## Session 2 — 2026-08-19
 
 What we did: Installed and verified the full Day 1 tooling stack on Windows — Python, Git, VS Code, pip — and confirmed the GitHub account is ready to go. Test-drove a throwaway virtual environment ahead of Day 1 itself, which surfaced two Windows/PowerShell-specific snags, both now permanently resolved on this machine: PowerShell requires an explicit .\ prefix to run a local script (unlike Command Prompt), and PowerShell's default execution policy blocks script execution until enabled once via Set-ExecutionPolicy -Scope CurrentUser RemoteSigned.

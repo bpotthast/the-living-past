@@ -13,7 +13,7 @@ and narrative/simulation layers — see `docs/BACKLOG.md`.
 
 ## Status
 
-**Planning complete, Day 1 not yet started.** (Update this line as the
+**Day 2 complete.** (Update this line as the
 project progresses — it should always reflect where things actually stand.)
 
 ## Project docs

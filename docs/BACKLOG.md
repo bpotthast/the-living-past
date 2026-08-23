@@ -7,7 +7,7 @@ V1 actually is.
 
 ## V1.x (small enhancements after V1 ships, before V1.5's AI layer)
 
-_(none yet)_
+- source_subtype list. Possible options include (historical item [letter/diary/speech], official records [census data, survey results, lab notes], media [photo, audio recording, poem], book, critique, article, reference material [encyclopedia], guides [textbook, almanac, directory])
 
 ## V1.5 — AI Historical Guide
 
