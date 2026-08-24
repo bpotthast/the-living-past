@@ -5,6 +5,53 @@ paste this top entry into the chat so Claude has context without you
 re-explaining the project.
 
 ---
+## Session 6 — 2026-08-24
+
+What we did: Reviewed WORLD_MODEL.md, DECISIONS.md, and BACKLOG.md updates made in a
+separate brainstorming session, and identified one change with real impact on the
+live schema: person.occupation_title being replaced by a new person_title_history
+table (to support people holding multiple titles over time, e.g. Caesar as consul
+then dictator). Performed a live schema migration for the first time — used
+ALTER TABLE person DROP COLUMN occupation_title against the running database, and
+separately walked through (without needing to use) the older drop/rename/recreate
+workaround for SQLite versions that lack DROP COLUMN support. Learned that foreign
+keys are not enforced by SQLite unless PRAGMA foreign_keys = ON is set per connection.
+Created person_title_history with its first two foreign keys (to person and
+culture_topic). Made and logged a schema-wide decision: all relationship join tables
+use a 3-column composite primary key (entity_a_id, entity_b_id, relation_type) rather
+than a surrogate id or a 2-column composite key, after working through a concrete
+case (Romulus & Remus needing both sibling_of and enemies_with as separate rows)
+showing why a 2-column key would incorrectly block that scenario. Built all remaining
+16 join tables from WORLD_MODEL.md: 11 entity-pair relationship tables
+(person_place, person_person, person_event, event_event, person_object,
+person_culture_topic, place_event, place_object, place_culture_topic,
+event_culture_topic, object_culture_topic) and 5 source-linkage tables
+(person/place/event/object/culture_topic_source_relationships), the latter using a
+simpler 2-column composite key since they carry no relation_type. Caught and fixed a
+repeated typo (source_id_id instead of source_id) across all five source-relationship
+tables before running. Ran the complete schema.sql against living_past.db and
+verified all 23 tables exist via .tables.
+
+What I learned: The difference between ALTER TABLE ... DROP COLUMN (modern SQLite)
+and the older rename/recreate/copy/drop workaround, and why the workaround is
+riskier (manual column enumeration, more steps, real data-loss risk on a live
+table). Why FOREIGN KEY and PRIMARY KEY have to be separate table-level clauses
+rather than inline column modifiers, unlike NOT NULL/CHECK. Why foreign keys aren't
+enforced by default in SQLite and have to be turned on per connection. How to reason
+about composite primary key design based on the actual semantics of a relationship
+(can a pair legitimately have more than one relation_type between them?) rather than
+defaulting to one pattern everywhere.
+
+Where we left off: Full schema (23 tables: 6 entity tables, person_title_history,
+11 relationship-pair tables, 5 source-relationship tables) is built, verified, and
+matches WORLD_MODEL.md and DECISIONS.md. No seed data has been entered yet.
+
+Next session should start with: Seed data entry — translating the Caesar/Cleopatra/
+Antony sketch (and remaining people/places/events/objects/cultures to reach
+V1_TECHNICAL_SPEC.md §10 targets) into INSERT statements, including the
+chicken-and-egg problem of needing entity IDs before relationship rows can reference
+them.
+
 ## Session 5 — 2026-08-23
 
 What we did: Set up the SQLite CLI (was previously only using the Python sqlite3

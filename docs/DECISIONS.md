@@ -7,6 +7,30 @@ to the one it replaces.
 Format per entry: what was decided, why, and what the alternatives were.
 
 ---
+## 2026-08-24 — Join tables use a 3-column composite primary key: (entity_a_id, entity_b_id, relation_type)
+
+**Decision:** All relationship join tables use
+`PRIMARY KEY (entity_a_id, entity_b_id, relation_type)` rather than a
+surrogate `id` column or a 2-column composite key on the entity IDs alone.
+
+**Why:** A 2-column composite key on just the two entity IDs would
+prevent a single pair of entities from having more than one relationship
+type — but that's a real case, not a hypothetical: Romulus and Remus are
+both `sibling_of` and (per legend) `enemies_with` at once. Including
+`relation_type` in the key allows multiple distinct relationships between
+the same pair, while still preventing the exact same relationship
+(same pair + same relation_type) from being inserted twice by accident.
+A surrogate `id` alone would allow that exact duplicate silently.
+
+**Alternatives considered:** Surrogate `id` primary key, no composite
+uniqueness enforced — simplest, but allows accidental duplicate rows.
+2-column composite key (entity_a_id, entity_b_id) — actively incorrect
+for tables like person_person_relationships where a pair can legitimately
+hold multiple relation_types.
+
+**Status:** Applies to all relationship join tables going forward,
+starting Day 3.
+
 ## 2026-08-24 — Replace person.occupation_title with person_title_history
 
 **Decision:** Remove the single `occupation_title` TEXT column from
