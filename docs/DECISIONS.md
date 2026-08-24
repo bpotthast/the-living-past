@@ -7,6 +7,121 @@ to the one it replaces.
 Format per entry: what was decided, why, and what the alternatives were.
 
 ---
+## 2026-08-24 — Replace person.occupation_title with person_title_history
+
+**Decision:** Remove the single `occupation_title` TEXT column from
+`person`. Add a new table, `person_title_history`, allowing a person to
+hold multiple titles over time, each with its own date range and
+optional link to the culture/polity the title belongs to.
+
+**Why:** A single text field can't represent someone who held different
+roles at different times (Eisenhower: General 1945–48, then President
+1953–61) or simultaneous roles (Napoleon: General and Emperor at once).
+This isn't a hypothetical edge case — Julius Caesar, already in the Day
+3 seed sketch, held consul and dictator at different points. Discovered
+before seed data entry began, so caught early rather than as a later
+migration.
+
+Deliberately NOT solving cross-culture title definitions (what
+"President" means differs between the US and France; what "King" means
+differs between George III and Charles III) as a separate controlled-
+vocabulary/definitions system. Scoping each title row to a
+`culture_topic_id` and letting title stay freetext (same pattern as
+`relation_type`) disambiguates by context without inventing a formal
+title taxonomy. A dedicated title-definitions system stays backlogged
+if it turns out to be needed later.
+
+**Alternatives considered:** Keeping `occupation_title` as a quick-
+summary field alongside the new table — rejected as duplicate sources of
+truth for the same information; `person_title_history` becomes the sole
+source, with app-layer code responsible for showing a "current/primary"
+title if a summary view is ever needed.
+
+**Status:** In progress — Day 3, before seed data entry.
+
+## 2026-08-24 — Mythology gets its own schema, separate from fictional_universe
+
+**Decision:** Backlogged mythology/religion as a third category —
+`mythos` and `deity_figure` tables — rather than reusing
+`fictional_universe`. `mythos` links back to a real `culture_topic` row
+(e.g. Greek Mythology → Ancient Greek Religion); `fictional_universe`
+does not link to real culture at all.
+
+Two separate relationship tables for `deity_figure`, not one:
+`deity_relationships` for same-mythos genealogy/relations (Zeus father
+of Hercules, sibling of Hades), and `mythos_comparison_relationships`
+for cross-mythos comparison (Zeus parallels Odin). Same reasoning as
+keeping `alternate_history` and `fictional_universe` separate — "family
+relationships within one belief system" and "scholarly comparison across
+two belief systems" are different kinds of claims and shouldn't share a
+table.
+
+**Why:** A myth and an authored fictional world are different kinds of
+claims. Middle-earth is fiction Tolkien knew was fiction. Greek
+mythology was genuinely believed and practiced by a real historical
+culture — the belief system itself is a real historical fact, even
+though the deities within it aren't independently verifiable the way a
+historical person is. Bucketing deity figures the same way as Bilbo
+Baggins would blur the established_fact / scholarly_interpretation /
+disputed / speculation distinction the provenance model already relies
+on for V1. Keeping mythology separate, and explicitly tied back to real
+culture_topic, keeps that distinction intact.
+
+Splitting `deity_relationships` from `mythos_comparison_relationships`
+follows the same logic one level down: `deity_relationships` mirrors the
+existing `person_person_relationships` pattern (same-universe, intra-
+mythos), while `mythos_comparison_relationships` is the first
+relationship table in the project designed to intentionally cross
+universe/mythos boundaries — every other relationship table so far
+assumes both sides belong to the same universe.
+
+**Alternatives considered:** Reusing `fictional_universe` for
+mythologies too — simpler, one less table pair, but forces a false
+equivalence between authored fiction and historical religious belief,
+and gives up the tie back to real culture_topic that makes "compare
+Greek and Norse mythology" a meaningful historical-exploration feature
+rather than just a fiction-browsing feature. For the relationship split:
+a single `deity_relationships` table with a same-mythos/cross-mythos
+flag column — rejected because a boolean flag doesn't stop someone from
+mislabeling a cross-mythos row as same-mythos, whereas separate tables
+make the distinction structural rather than a value that can be wrong.
+
+**Status:** Backlogged (V2). No implementation, no changes to current V1
+schema.
+
+## 2026-08-24 — Alternate history and fictional universes: separate schemas, not one shared "universe" concept
+
+**Decision:** Backlogged two separate future tables — `alternate_history`
+and `fictional_universe` — rather than a single unified `universe`/
+`reality` table covering both. Each existing entity table would eventually
+get two nullable FKs (`alternate_history_id`, `fictional_universe_id`)
+rather than one shared FK to a common table.
+
+**Why:** The two ideas are structurally similar (both are "this entity
+doesn't belong to real baseline history") but conceptually distinct in a
+way that matters for correctness. An alternate history is real history
+with one thing changed — it inherits everything upstream of its
+divergence point and only diverges from there. A fictional universe
+shares nothing with real history except, sometimes, a real-world creator
+(Tolkien, GRRM) — there's no shared timeline to diverge from. Collapsing
+both into one table risks either forcing fictional universes to fake a
+divergence point they don't have, or forcing alternate histories to
+duplicate everything instead of inheriting from baseline. Keeping them
+separate, even at the cost of near-duplicate table shapes, keeps each
+concept honest about what it actually is.
+
+**Alternatives considered:** A single shared `universe` table with a
+`universe_type` discriminator column (`baseline` | `alternate_history` |
+`fictional`) — appealing for reducing schema sprawl, but risks nullable
+columns that only make sense for one type (`diverged_from_event_id` is
+meaningless for a fictional universe) and blurs a distinction that's
+worth keeping explicit. Revisit only if, once actually built, the two
+turn out to need identical query patterns and the duplication becomes a
+real maintenance burden rather than a theoretical one.
+
+**Status:** Both concepts remain fully backlogged (V2) — no implementation
+work started, no schema changes made to the current V1 tables.
+
 ## 2026-08-23 — Track schema.sql + seed scripts, not the binary .db file
 
 **Decision:** `data/schema.sql` (and a future seed script) are tracked in

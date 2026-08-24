@@ -16,7 +16,50 @@ V1 actually is.
 
 ## V2 — Alternate Timelines
 
-_(none yet — see original project brief for the general concept)_
+- Alternate timeline divergence points (original concept — real history
+  as baseline, user picks a divergence event, explores how things unfold
+  differently from there)
+- **Companion concept — Fictional Universe exploration** (kept as a
+  separate schema/system from alternate history, not merged, even though
+  the two will likely share a similar table shape): support entities and
+  relationships scoped to a wholly separate fictional reality (Middle-
+  earth, Westeros) rather than a divergence from real history. Entry
+  point: discover a fictional-work relationship on a real person (e.g.
+  Tolkien → authored → The Hobbit) and descend into that universe's own
+  explorable graph. See WORLD_MODEL.md notes for a conceptual schema
+  sketch of both.
+   - Conceptual schema sketch (two separate tables, same general shape):
+		Alternate_History
+		- id (PK)
+		- name (TEXT)                          -- "No Rubicon Crossing"
+		- description (TEXT)
+		- diverged_from_event_id (FK -> event.id)   -- the real-history fork point
+		- divergence_description (TEXT)
+
+		fictional_universe
+		- id (PK)
+		- name (TEXT)                          -- "Middle-earth", "Westeros"
+		- description (TEXT)
+		- creator_person_id (FK -> person.id)  -- Tolkien, GRRM (a real-history person)
+		- source_work (TEXT or FK to a future `work` entity)
+
+		Then each existing entity table (person, place, event, object, culture_topic) would eventually get two nullable FKs, not one shared column:
+
+		alternate_history_id  (FK -> alternate_history.id, nullable)
+		fictional_universe_id (FK -> fictional_universe.id, nullable)
+- **Mythology & religion exploration.** Own category, not folded into
+  fictional_universe — myths were genuinely believed/practiced by real
+  historical cultures, unlike authored fiction, and that distinction
+  matters for the provenance model. New entities: `mythos` (Greek
+  Mythology, Norse Mythology — each tied back to a real `culture_topic`
+  row) and `deity_figure` (Zeus, Odin, etc., scoped to a mythos). New
+  capability, not just new tables: cross-mythos comparison — a
+  relationship type that spans two different mythologies (e.g. Zeus
+  parallels Odin as a sky/king-of-gods archetype), which none of the
+  existing same-universe relationship tables support. See
+  WORLD_MODEL.md sketch and DECISIONS.md (2026-08-24) for the schema and
+  reasoning.		
+
 
 ## V3 — Interactive Historical Storytelling
 

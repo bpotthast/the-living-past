@@ -10,14 +10,23 @@
 - birth_precision (TEXT: Exact|Circa|Decade|Century)
 - death_precision (TEXT: Exact|Circa|Decade|Century)
 - description (free text)
-- occupation_title (TEXT)
+
+### person_title_history
+- id (INTEGER, PK)
+- person_id (FK -> person.id)
+- title (TEXT)
+- culture_topic_id (FK -> culture_topic.id, nullable)
+- start_year (INTEGER)
+- end_year (INTEGER, nullable)
+- start_precision (TEXT: Exact|Circa|Decade|Century)
+- end_precision (TEXT: Exact|Circa|Decade|Century)
 
 ### place
 - id (INTEGER, PK)
 - name (TEXT, NOT NULL)
 - historical_names (TEXT, comma delimited)
-- lat (NUMERIC, nullable)
-- long (NUMERIC, nullable)
+- latitude (NUMERIC, nullable)
+- longitude (NUMERIC, nullable)
 - description (TEXT)
 
 ### event
@@ -35,7 +44,7 @@
 - id (INTEGER, PK)
 - name (TEXT, NOT NULL)
 - type (TEXT: freetext for V1 - hard set of values to be determined as dataset builds out)
-- create_date (INTEGER, nullable)
+- create_date (INTEGER, NOT NULL)
 - create_precision (TEXT: exact|circa|decade|century)
 - discovery_date (INTEGER, nullable) //assumed that all discovery dates are well documented. 
 - description (TEXT)
@@ -166,3 +175,67 @@ place: Rome, Rubicon River, Alexandria, Egypt
 event: First Roman Triumvirate formed, Crossing of the Rubicon River, Battle of Actium
 object: Cleopatra's Needles, The Elephant Denarius
 culture_topic: Roman Senate, Egyptian Politics, Ancient Rome, Ancient Egypt
+
+## Future / Not Yet Built — V2 backlog sketches
+
+See BACKLOG.md and DECISIONS.md (2026-08-24) for full context. Not part
+of the current schema — captured here only so the shape isn't lost.
+
+### alternate_history (sketch)
+- id (PK)
+- name (TEXT)
+- description (TEXT)
+- diverged_from_event_id (FK -> event.id)
+- divergence_description (TEXT)
+
+### fictional_universe (sketch)
+- id (PK)
+- name (TEXT)
+- description (TEXT)
+- creator_person_id (FK -> person.id)
+- source_work (TEXT — may become its own `work` entity later; open question)
+
+### Entity table extension (sketch)
+Each of person/place/event/object/culture_topic would eventually gain:
+- alternate_history_id (FK -> alternate_history.id, nullable)
+- fictional_universe_id (FK -> fictional_universe.id, nullable)
+(App-layer rule: at most one of these two should be set per entity.)
+
+### mythos (sketch)
+- id (PK)
+- name (TEXT)                              -- "Greek Mythology", "Norse Mythology"
+- associated_culture_topic_id (FK -> culture_topic.id)  -- ties back to real history
+- description (TEXT)
+
+### deity_figure (sketch)
+- id (PK)
+- mythos_id (FK -> mythos.id)
+- name (TEXT)                              -- "Zeus", "Odin"
+- domain (TEXT)                            -- "sky/thunder", "war", "wisdom"
+- description (TEXT)
+- (sources via existing source join-table pattern, once built)
+
+### deity_relationships (sketch)
+- figure_a_id (FK -> deity_figure.id)
+- figure_b_id (FK -> deity_figure.id)
+- relation_type (TEXT)   -- father_of, sibling_of, spouse_of, enemies_with
+-- Same-mythos genealogy/relationships (Zeus father of Hercules).
+-- Kept separate from mythos_comparison_relationships below, which is
+-- cross-mythos only (Zeus parallels Odin).
+
+### mythos_comparison_relationships (sketch)
+- figure_a_id (FK -> deity_figure.id)
+- figure_b_id (FK -> deity_figure.id)
+- relation_type (TEXT)                     -- "parallels", "syncretized_with", "analogous_to"
+- comparison_notes (TEXT)
+-- NOTE: first relationship table designed to cross universe boundaries;
+-- every other relationship table so far assumes same-universe entities.
+
+Open questions for whenever this gets built:
+- Do myths need their own source-confidence framing distinct from the
+  existing established_fact/scholarly_interpretation/disputed/
+  speculation flags (e.g. "religious/traditional belief" as a fifth
+  category, not a truth-value at all)?
+- Does deity_figure need person-style fields (birth/death-equivalent
+  events like "Ragnarok") or is that overreach for what's meant to be a
+  lightweight comparison feature?
