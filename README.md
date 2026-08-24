@@ -13,8 +13,14 @@ and narrative/simulation layers — see `docs/BACKLOG.md`.
 
 ## Status
 
-**Day 2 complete.** (Update this line as the
-project progresses — it should always reflect where things actually stand.)
+**Day 3 complete.** Full schema (24 tables: 6 entity tables, 12 relationship-pair
+tables, 5 source-relationship tables, and person_title_history) is built and
+seeded with a small interconnected dataset (3 people, 6 places, 4 events, 5
+objects, 14 culture/topic entries — smaller than the original ~10/10/10/5 sketch,
+but real relationships and multi-hop traversal are confirmed working via direct
+SQL queries). Source-relationship tables exist but are still empty, intentionally
+deferred to Day 5. (Update this line as the project progresses — it should
+always reflect where things actually stand.)
 
 ## Project docs
 

@@ -9,7 +9,7 @@ actually done, regardless of how many sittings a step takes.
       venv, SQLite. Repo skeleton. Trivial app that runs and commits.
 - [x] **Day 2 — Design the historical world.** `WORLD_MODEL.md`: entities,
       properties, relationships, reviewed and critiqued before building.
-- [ ] **Day 3 — Build the database.** SQLite tables per `V1_TECHNICAL_SPEC.md`
+- [X] **Day 3 — Build the database.** SQLite tables per `V1_TECHNICAL_SPEC.md`
       §5. Seed dataset: ~10 people, ~10 places, ~10 events, ~5 objects.
       Query relationships via SQL.
 - [ ] **Day 4 — Build the rabbit hole.** CLI: search, view an entity,

@@ -7,6 +7,29 @@ to the one it replaces.
 Format per entry: what was decided, why, and what the alternatives were.
 
 ---
+
+## 2026-08-24 — Add culture_topic_culture_topic_relationships table
+
+**Decision:** Added a new self-referencing join table,
+culture_topic_culture_topic_relationships, following the same pattern
+already used for person_person_relationships and
+event_event_relationships. Added sub_topic_of to relation_type_vocabulary.
+
+**Why:** Discovered mid-seed-data-entry that culture_topic was the only
+entity type in the original schema without a way to relate to itself.
+Every other entity table (person, event) already had this. Without it,
+there was no way to express that a narrower topic (e.g. "Rule of Julius
+Caesar") is a sub-topic of a broader one (e.g. "Roman Politics" ->
+"Roman Republic") as a real, queryable relationship — only as
+unstructured text in a description field, which the rabbit-hole
+navigation can't traverse.
+
+**Alternatives considered:** Describing the hierarchy only in each
+topic's free-text description — rejected, since it wouldn't be a real
+traversable link and defeats the purpose of the relational model.
+
+**Status:** Live — added to schema.sql and applied to living_past.db.
+
 ## 2026-08-24 — Join tables use a 3-column composite primary key: (entity_a_id, entity_b_id, relation_type)
 
 **Decision:** All relationship join tables use

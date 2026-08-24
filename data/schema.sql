@@ -190,6 +190,26 @@ CREATE TABLE IF NOT EXISTS object_culture_topic_relationships (
     PRIMARY KEY (object_id, culture_topic_id, relation_type)
 );
 
+CREATE TABLE IF NOT EXISTS culture_topic_culture_topic_relationships (
+    culture_topic_a_id INTEGER,
+    culture_topic_b_id INTEGER,
+    relation_type TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (culture_topic_a_id) REFERENCES culture_topic(id),
+    FOREIGN KEY (culture_topic_b_id) REFERENCES culture_topic(id),
+    PRIMARY KEY (culture_topic_a_id, culture_topic_b_id, relation_type)
+);
+
+CREATE TABLE IF NOT EXISTS culture_topic_culture_topic_relationships (
+    culture_topic_a_id INTEGER,
+    culture_topic_b_id INTEGER,
+    relation_type TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (culture_topic_a_id) REFERENCES culture_topic(id),
+    FOREIGN KEY (culture_topic_b_id) REFERENCES culture_topic(id),
+    PRIMARY KEY (culture_topic_a_id, culture_topic_b_id, relation_type)
+);
+
 CREATE TABLE IF NOT EXISTS person_source_relationships (
 	person_id INTEGER,
     source_id INTEGER,

@@ -5,6 +5,59 @@ paste this top entry into the chat so Claude has context without you
 re-explaining the project.
 
 ---
+## Session 7 — 2026-08-24
+
+What we did: Completed Day 3 seed data entry. Populated all 6 entity tables (3
+people: Caesar, Cleopatra, Antony; 6 places, including two added mid-session —
+Actium and Tusculum — to close gaps discovered while building relationships; 4
+events; 5 objects; 14 culture_topics including a full broad-to-narrow hierarchy)
+and all 12 relationship join tables, plus person_title_history. Learned and
+applied real INSERT syntax: escaping apostrophes with '', keeping numeric columns
+unquoted, and the difference between schema.sql's safe re-runnability (via
+IF NOT EXISTS) versus seed.sql's lack of any equivalent protection for plain
+INSERT statements — addressed by commenting out already-run sections. Hit and
+recovered from two real incidents: a repeated typo creating a stray lviing_past.db
+file (deleted, harmless), and a real near-miss where an uncommented place section
+got re-run accidentally, silently duplicating 4 rows (caught via row-count checks,
+cleaned up via targeted DELETE by id). Discovered mid-session that culture_topic
+was the only entity type without a self-referencing relationship table, blocking
+the desired broad-to-narrow topic hierarchy (e.g. Roman Politics -> Roman
+Republic -> Rule of Julius Caesar); added culture_topic_culture_topic_relationships
+following the existing person_person/event_event pattern, plus a sub_topic_of
+vocabulary entry, and logged the decision. Built a full topic hierarchy including
+an intentional dual-parent case (Ptolemaic Kingdom under both Egyptian Politics
+and Hellenistic World), made possible by the earlier 3-column composite key
+decision. Verified historical facts via web search before entering data
+(coordinates, dates, discovery years) rather than relying on memory, catching one
+real error along the way (initial Alexandria coordinates pointed to Alexandria,
+Virginia, not Egypt). Ran real traversal queries joining person -> event and
+person -> event -> place across relationship tables, confirming the schema
+actually supports rabbit-hole-style navigation as designed.
+
+What I learned: Why plain INSERT has no re-run safety net the way
+CREATE TABLE IF NOT EXISTS does, and why that makes disciplined commenting-out of
+already-run sections a real necessity, not just tidiness. How to recover from a
+partial duplicate-insert incident safely (verify via SELECT before any DELETE,
+delete by specific id rather than by name). Why composite primary keys on
+relationship tables catch accidental re-inserts loudly (UNIQUE constraint
+failures) while plain-id entity tables don't catch them at all. How to reason
+about coordinate ambiguity for real-world place names (Alexandria, Actium) and
+verify facts before trusting them. Why a topic can have more than one legitimate
+parent in a hierarchy, and how a composite key makes that safely representable.
+How to write and read multi-table JOIN queries that walk relationships across
+more than one hop.
+
+Where we left off: Full Day 3 dataset is live and verified: 6 entity tables, 12
+relationship-pair tables, 5 source-relationship tables (still empty --
+person/place/event/object/culture_topic_source_relationships have no rows yet),
+and person_title_history, all populated and internally consistent except for the
+source tables. Traversal queries confirmed working end-to-end.
+
+Next session should start with: Day 4 -- building a CLI exploration interface
+(search, view an entity, navigate to related entities) per ROADMAP.md. Optionally,
+populate the source-relationship tables first if source/provenance display is
+wanted before the CLI work begins.
+
 ## Session 6 — 2026-08-24
 
 What we did: Reviewed WORLD_MODEL.md, DECISIONS.md, and BACKLOG.md updates made in a

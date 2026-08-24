@@ -89,6 +89,11 @@
 - event_b_id (FK -> event.id)
 - relation_type (TEXT)
 
+### culture_topic_culture_topic_relationships
+- culture_topic_a_id (FK -> culture_topic.id)
+- culture_topic_b_id (FK -> culture_topic.id)
+- relation_type (TEXT)
+
 ### person_object_relationships
 - person_id (FK -> person.id)
 - object_id (FK -> object.id)
@@ -168,6 +173,7 @@
 - part_of
 - lived_in
 - lived_during
+- sub_topic_of
 
 ## Seed entity sketch
 person: Julius Caesar, Cleopatra, Mark Antony
