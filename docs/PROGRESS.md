@@ -5,6 +5,28 @@ paste this top entry into the chat so Claude has context without you
 re-explaining the project.
 
 ---
+## Session 8 — 2026-08-24
+
+What we did: Wrapped up the Claude.ai chat-based phase of the project and prepared the
+handoff to Claude Code. Reviewed all project docs for consistency (README, V1_TECHNICAL_SPEC,
+ROADMAP, BACKLOG, DECISIONS, PROGRESS, WORLD_MODEL, Cheat Sheet) — no contradictions found,
+Day 3 status confirmed accurate everywhere. Created CLAUDE.md at the repo root, condensing
+the mentor/three-strikes working style, V1 scope boundaries, established conventions, and
+docs map into a single file Claude Code auto-loads each session, replacing the manual
+"paste PROGRESS.md" habit used in the chat-based phase.
+
+What I learned: Why a persistent project-context file matters more once the tool itself
+has direct file/terminal access — nothing stops a more capable tool from silently building
+ahead of scope or skipping the learning-coach pacing unless that's stated somewhere it
+will actually read every session.
+
+Where we left off: Day 3 is complete and verified. All docs are current and consistent.
+No code changes this session — purely a documentation/handoff session.
+
+Next session should start with: Day 4 in Claude Code — building the CLI exploration
+interface (search, view an entity, navigate to related entities) per ROADMAP.md. CLAUDE.md
+now provides session-start context automatically.
+
 ## Session 7 — 2026-08-24
 
 What we did: Completed Day 3 seed data entry. Populated all 6 entity tables (3
